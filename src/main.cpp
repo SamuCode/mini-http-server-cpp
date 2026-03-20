@@ -20,7 +20,7 @@ int main() {
         return 1;
     }
 
-    // 2) Configurer l'adresse du serveur
+    // 2) Configurer l'adresse du serveur1
     sockaddr_in address {};
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
