@@ -93,7 +93,7 @@ int main() {
                 // Construire la réponse HTTP
                 std::string response = 
                     "HTTP/1.1 200 OK\r\n"
-                    "Content-Type: text/html\r\n"
+                    "Content-Type: text/html; charset=UTF-8\r\n"
                     "Content-Length: " + std::to_string(html_content.length()) + "\r\n"
                     "Connection: close\r\n"
                     "\r\n" +
@@ -102,6 +102,10 @@ int main() {
                 send(client_fd, response.c_str(), response.length(), 0);
                 std::cout << "Page HTML envoyée (" << html_content.length() << " octets)" << std::endl;
             }
+        } else {
+            std::cerr << "Erreur ou connexion fermée par le client" << std::endl;
+            close(client_fd);
+            continue;
         }
         
         // Fermer la connexion client
