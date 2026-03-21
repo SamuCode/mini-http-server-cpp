@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini HTTP Server C++</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(135deg, #0f172a, #1e293b, #334155);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .background-bubbles span {
+      position: absolute;
+      display: block;
+      width: 20px;
+      height: 20px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 50%;
+      animation: float 12s linear infinite;
+      bottom: -100px;
+    }
+
+    .background-bubbles span:nth-child(1) { left: 10%; width: 30px; height: 30px; animation-duration: 10s; }
+    .background-bubbles span:nth-child(2) { left: 25%; width: 18px; height: 18px; animation-duration: 14s; }
+    .background-bubbles span:nth-child(3) { left: 40%; width: 40px; height: 40px; animation-duration: 12s; }
+    .background-bubbles span:nth-child(4) { left: 55%; width: 25px; height: 25px; animation-duration: 16s; }
+    .background-bubbles span:nth-child(5) { left: 70%; width: 15px; height: 15px; animation-duration: 11s; }
+    .background-bubbles span:nth-child(6) { left: 85%; width: 35px; height: 35px; animation-duration: 15s; }
+
+    @keyframes float {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 0;
+      }
+      20% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-110vh) scale(1.4);
+        opacity: 0;
+      }
+    }
+
+    .container {
+      text-align: center;
+      padding: 40px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+      animation: fadeInUp 1.2s ease;
+      max-width: 700px;
+      width: 90%;
+      z-index: 2;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 8px 16px;
+      background: rgba(59, 130, 246, 0.2);
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      border-radius: 999px;
+      font-size: 14px;
+      margin-bottom: 20px;
+      animation: pulse 2s infinite;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      animation: slideDown 1s ease;
+    }
+
+    h1 span {
+      color: #38bdf8;
+    }
+
+    p {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-bottom: 25px;
+      line-height: 1.6;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      text-decoration: none;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-weight: bold;
+      transition: 0.3s ease;
+    }
+
+    .btn-primary {
+      background: #38bdf8;
+      color: #0f172a;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(56, 189, 248, 0.4);
+    }
+
+    .btn-secondary {
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      background: rgba(255,255,255,0.05);
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-3px);
+      background: rgba(255,255,255,0.12);
+    }
+
+    .footer {
+      margin-top: 25px;
+      font-size: 0.95rem;
+      color: #cbd5e1;
+      opacity: 0.9;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+      100% { transform: scale(1); }
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2.2rem;
+      }
+
+      p {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="background-bubbles">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <div class="container">
+    <div class="badge">🚀 C++ Static HTTP Server</div>
+    <h1>Bienvenue sur <span>Mini Server</span></h1>
+    <p>
+      Ceci est une page d’accueil statique avec animation,
+      servie par un serveur HTTP codé en C++.
+    </p>
+
+    <div class="buttons">
+      <a href="/" class="btn btn-primary">Accueil</a>
+      <a href="/about" class="btn btn-secondary">À propos</a>
+      <a href="/time" class="btn btn-secondary">Voir l'heure</a>
+    </div>
+
+    <div class="footer">
+      coded by <strong>Sam and Jordan</strong>
+    </div>
+  </div>
+
+</body>
+</html>

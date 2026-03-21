@@ -4,9 +4,12 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <fstream>
+#include <sstream>
+#include <string>
 
 int main() {
-    // 1) Créer la socket serveur
+    //Créer la socket serveur
     int server_fd = socket(AF_INET, SOCK_STREAM, 0);
     if(server_fd == -1) {
         std::cerr << "Erreur lors de la création de la socket" << std::endl;
@@ -20,20 +23,20 @@ int main() {
         return 1;
     }
 
-    // 2) Configurer l'adresse du serveur1
+    // Configurer l'adresse du serveur
     sockaddr_in address {};
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(8080);
 
-    // 3) Lier la socket au port
+    // Lier la socket au port
     if(bind(server_fd, (struct sockaddr*)&address, sizeof(address)) < 0) {
         std::cerr << "Erreur lors du bind de la socket" << std::endl;
         close(server_fd);
         return 1;
     }
 
-    // 4 ) Écouter les connexions entrantes
+    // Écouter les connexions entrantes
     if(listen(server_fd, 5) < 0) {
         std::cerr << "Erreur lors de l'écoute des connexions" << std::endl;
         close(server_fd);
@@ -67,17 +70,37 @@ int main() {
         if(bytes_read > 0) {
             std::cout << "Requête reçue:\n" << buffer << std::endl;
             
-            // Réponse HTTP simple
-            const char* response = 
-                "HTTP/1.1 200 OK\r\n"
-                "Content-Type: text/html\r\n"
-                "Content-Length: 96\r\n"
-                "\r\n"
-                "<html><body><h1>Serveur C++</h1>"
-                "<p>Bravo ! Votre serveur fonctionne !</p>"
-                "</body></html>\r\n";
+            // Lire le fichier index.html
+            std::ifstream file("index.html");
             
-            send(client_fd, response, strlen(response), 0);
+            // Vérifier si le fichier existe
+            if(!file.is_open()) {
+                std::cerr << "Erreur: impossible d'ouvrir index.html" << std::endl;
+                const char* error_response = 
+                    "HTTP/1.1 404 Not Found\r\n"
+                    "Content-Type: text/html\r\n"
+                    "\r\n"
+                    "<html><body><h1>404 - Page non trouvée</h1></body></html>";
+                send(client_fd, error_response, strlen(error_response), 0);
+            } else {
+                // Lire tout le contenu du fichier
+                std::stringstream buffer_stream;
+                buffer_stream << file.rdbuf();
+                std::string html_content = buffer_stream.str();
+                file.close();
+                
+                // Construire la réponse HTTP
+                std::string response = 
+                    "HTTP/1.1 200 OK\r\n"
+                    "Content-Type: text/html\r\n"
+                    "Content-Length: " + std::to_string(html_content.length()) + "\r\n"
+                    "Connection: close\r\n"
+                    "\r\n" +
+                    html_content;
+                
+                send(client_fd, response.c_str(), response.length(), 0);
+                std::cout << "Page HTML envoyée (" << html_content.length() << " octets)" << std::endl;
+            }
         }
         
         // Fermer la connexion client
