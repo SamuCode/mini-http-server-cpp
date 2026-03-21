@@ -71,7 +71,7 @@ int main() {
             std::cout << "Requête reçue:\n" << buffer << std::endl;
             
             // Lire le fichier index.html
-            std::ifstream file("index.html");
+            std::ifstream file("./src/index.html");
             
             // Vérifier si le fichier existe
             if(!file.is_open()) {
