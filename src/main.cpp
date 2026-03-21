@@ -80,7 +80,7 @@ int main() {
                     "HTTP/1.1 404 Not Found\r\n"
                     "Content-Type: text/html\r\n"
                     "\r\n"
-                    "<html><body><h1>404 - Page non trouvée</h1></body></html>";
+                    "<html><body><h1>Page non trouvée</h1></body></html>";
                 send(client_fd, error_response, strlen(error_response), 0);
             } else {
                 // Lire tout le contenu du fichier
