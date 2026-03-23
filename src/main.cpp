@@ -8,6 +8,9 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <ctime>
+#include <vector> //Ne pas oublier !
+#include <algorithm>
 
 int main() {
     //Créer la socket serveur
@@ -69,14 +72,56 @@ int main() {
         int bytes_read = read(client_fd, buffer, sizeof(buffer) - 1);
         
         if(bytes_read > 0) {
+            std::string file_path = "";
+            std::string response = "";
+            std::string status_line = "HTTP/1.1 200 OK\r\n";
+            std::vector<std::string> mesPages = {"/", "/about", "/time"};
+
+       
+
             std::cout << "Requête reçue:\n" << buffer << std::endl;
             
+            std::istringstream request_stream(buffer);
+            std::string method, path, version;
+            request_stream >> method >> path >> version;
+
+            std::cout << "La Méthode: " << method << std::endl;
+            std::cout << "Mon Chemin: " << path << std::endl;
+            std::cout << "Ma Version: " << version << std::endl;
+
+            //On vérifie si la page existe dans la liste des pages -> sinon 404
+            if (std::find(mesPages.begin(), mesPages.end(), path) == mesPages.end()) {
+                status_line = "HTTP/1.1 404 Not Found\r\n";
+            }
             // Lire le fichier index.html
-            std::ifstream file("index.html");
+            if (path == "/") {
+                file_path = "./public/index.html";
+            } else if (path == "/about") {
+                file_path = "./public/about.html";
+            } else if (path == "/time") {
+                std::time_t now = std::time(nullptr);
+                std::string body = "<html><body><h1>Heure actuelle</h1><p>" + std::string(std::ctime(&now)) + "</p></body></html>";
+
+                response =
+                    status_line +
+                    "Content-Type: text/html\r\n"
+                    "Content-Length: " + std::to_string(body.length()) + "\r\n"
+                    "Connection: close\r\n"
+                    "\r\n" +
+                    body;
+
+                send(client_fd, response.c_str(), response.length(), 0);
+                close(client_fd);
+                continue;
+            } else {
+                file_path = "./public/404.html";
+            }
             
+            std::ifstream file(file_path);
+
             // Vérifier si le fichier existe
             if(!file.is_open()) {
-                std::cerr << "Erreur: impossible d'ouvrir index.html" << std::endl;
+                std::cerr << "Erreur: impossible d'ouvrir la page demandée" << std::endl;
                 const char* error_response = 
                     "HTTP/1.1 404 Not Found\r\n"
                     "Content-Type: text/html\r\n"
@@ -92,7 +137,7 @@ int main() {
                 
                 // Construire la réponse HTTP
                 std::string response = 
-                    "HTTP/1.1 200 OK\r\n"
+                    status_line +
                     "Content-Type: text/html; charset=UTF-8\r\n"
                     "Content-Length: " + std::to_string(html_content.length()) + "\r\n"
                     "Connection: close\r\n"
