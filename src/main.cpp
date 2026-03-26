@@ -9,7 +9,7 @@
 #include <sstream>
 #include <string>
 #include <ctime>
-#include <vector> //Ne pas oublier !
+#include <vector>
 #include <algorithm>
 
 int main() {
